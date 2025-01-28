@@ -1,0 +1,25 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 325149554414.dkr.ecr.us-east-1.amazonaws.com
+      - echo Logged in successfully.
+  build:
+    commands:
+      - echo Building the Docker image...
+      - docker build -t naveen/my-flask-app .
+      - echo Tagging the image...
+      - docker tag naveen/my-flask-app:latest 325149554414.dkr.ecr.us-east-1.amazonaws.com/naveen/my-flask-app:latest
+  post_build:
+    commands:
+      - echo Pushing the image to Amazon ECR...
+      - docker push 325149554414.dkr.ecr.us-east-1.amazonaws.com/naveen/my-flask-app:latest
+      - echo Build completed successfully.
+
+artifacts:
+  files:
+    - Dockerfile
+    - requirements.txt
+    - run.py
